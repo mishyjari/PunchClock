@@ -15,7 +15,6 @@ function zeroFill(i)
                 { i = '0' + i }
         return i;
 };
-
 const _time = {
         dayArr: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
         monthArr: ['January','February','March','April','May','June','July','August','September','October','November','December'],
@@ -38,6 +37,10 @@ const numDate = `${_time.monthNum}/${_time.dayOfMonth}/${_time.year}`;
 const fullDate = `${day}, ${month} ${calDay}, ${year}`;
 
 
+//Print the heading with the time
+document.getElementById('timeHeading').innerHTML = `${day}, ${month} ${calDay}, ${year} at ${clock}`;
+
+
 
 //Create object for users with two predefined entries. Need to write this to external file to save changes or use a database.
 const Users = 
@@ -49,7 +52,7 @@ const Users =
 	},
 	2365:
 	{
-		name: 'Jillian Gilpatrick',
+		name: 'Julia Jilly Jiles',
 		punchStatus: false,
 	},
 };
@@ -61,10 +64,16 @@ let myId;
 
 
 //Checks if number entered exists as a key in Users, returns an authorized message with their name if true.
-idButton.onclick = checkAuth = () => { 
-	myId = Number(document.getElementById('entryField').value);
-		if(Users[myId]) {alert(`${Users[myId].name}, you are authorized!`)}
-		else {alert('That number does not exist!')};
+idButton.onclick = checkAuth = () => 
+{ 
+	//Set myId to the value of the entry field
+	myId = Number(document.getElementById('entryField').value); 
+	
+	//Checks to see if the ID entered exists as a key in Users
+	if(Users[myId]) 
+	{
+		alert(`${Users[myId].name}, you are authorized!`)
+	}	else {alert('That number does not exist!')};
 };
 
 
@@ -72,28 +81,26 @@ idButton.onclick = checkAuth = () => {
 //Adds new user with a user-defined number as a key and an object with the name and default false for punchStatus
 submitNewUser.onclick = newUser = () => 
 {
+	//Make sure the user number entered is, you know, a number
 	if(!isNaN(Number(newUserNum.value)))
 	{
-		Users[Number(newUserNum.value)] = {
+		//Make a sub object fearing that number, a name: name key and punchStatus default to false
+		Users[Number(newUserNum.value)] = 
+		{
 			name: newUserName.value,
 			punchStatus: false
 		}
+		alert(`User ${newUserName.value} successfully created with ID number ${newUserNum.value}!`)
 	} else { alert('Please enter a valid whole number!')};
-	console.log(Users);
+	console.log(Users); //just to check
 };
-
-
-
-
-
-
-document.getElementById('timeHeading').innerHTML = `${day}, ${month} ${calDay}, ${year} at ${clock}`;
 
 
 //New Punch
 punchButton.onclick = newPunch = () => { 
-	myId = Number(document.getElementById('punchField').value);
-	
+	//Same deal as the auth field
+	myId = Number(document.getElementById('punchField').value); 
+	//Catch for invalid numbers and conditional on/off switch
 	if(!Users[myId]) {alert(`That number doesn't exist!`)}
 	else if (Users[myId].punchStatus === true)
 	{
@@ -105,5 +112,6 @@ punchButton.onclick = newPunch = () => {
 		Users[myId].punchStatus = true;
 		alert(`${Users[myId].name} clocked in successfully at ${clock}!`);
 	}
+	//because i dont trust myself
 	else {alert(`System malfunction`)};
 };
