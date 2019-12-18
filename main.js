@@ -1,117 +1,72 @@
-//Variables linking to various HTML elements
-const idButton = document.getElementById('entryButton');
-const newUserName = document.getElementById('newUserName');
-const newUserNum = document.getElementById('newUserNum');
-const newUserButton = document.getElementById('submitNewUser');
-const punchButton = document.getElementById('punchButton');
-const punchNum = document.getElementById('punchField');
+//import React from 'react';
+//import ReactDOM from 'react-dom';
 
+//Get current time
+const sysTime = new Date();
+console.log(sysTime);
 
-//Script that formats the current date in some useful ways
-const date = new Date();
-function zeroFill(i)
-{
-        if ( i < 10 )
-                { i = '0' + i }
-        return i;
-};
-const _time = {
-        dayArr: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
-        monthArr: ['January','February','March','April','May','June','July','August','September','October','November','December'],
-        year: date.getFullYear(),
-        monthNum: zeroFill(date.getMonth()),
-        dayOfMonth: zeroFill(date.getDate()),
-        day: date.getDay(),
-        hour24: zeroFill(date.getHours()),
-        minute: zeroFill(date.getMinutes()),
+//Create empty user obj
+const UsersObj = {};
 
-};
-const year = _time.year;
-const month = _time.monthArr[_time.monthNum];
-const day = _time.dayArr[_time.day];
-const calDay = _time.dayOfMonth;
-const monthNum = _time.monthNo;
-const clock = `${_time.hour24}:${_time.minute}`;
-const milTime = _time.hour24 + Math.round((_time.minute/60)*100)/100;
-const numDate = `${_time.monthNum}/${_time.dayOfMonth}/${_time.year}`;
-const fullDate = `${day}, ${month} ${calDay}, ${year}`;
-
-
-//Print the heading with the time
-document.getElementById('timeHeading').innerHTML = `${day}, ${month} ${calDay}, ${year} at ${clock}`;
-
-
-
-//Create object for users with two predefined entries. Need to write this to external file to save changes or use a database.
-const Users = 
-{
-	2112: 
-	{
-		name: 'Michelle Frattaroli',
-		punchStatus: false,
-	},
-	2365:
-	{
-		name: 'Julia Jilly Jiles',
-		punchStatus: false,
-	},
+//Simple function that uses Object.assign to add new users to the UsersObj object
+const newUser = (id,name) => {
+	Object.assign(UsersObj,{[id]:{userName:name,punchStatus:false}})
 };
 
+newUser(2112,'Michelle Frattaroli');
 
-
-//Made this a global variable cause im dumb
-let myId;
-
-
-//Checks if number entered exists as a key in Users, returns an authorized message with their name if true.
-idButton.onclick = checkAuth = () => 
-{ 
-	//Set myId to the value of the entry field
-	myId = Number(document.getElementById('entryField').value); 
-	
-	//Checks to see if the ID entered exists as a key in Users
-	if(Users[myId]) 
-	{
-		alert(`${Users[myId].name}, you are authorized!`)
-	}	else {alert('That number does not exist!')};
+//User authorization function, looks for ID in UsersObj and returns boolean
+const userAuth = (id) => {
+	const userId = Number(id);
+	let auth = false;
+	if (UsersObj[userId]) 
+		{auth = true; 
+		console.log('authorized'); return auth; }
+	else if (!UsersObj[id]) 
+		{ console.log('Unauthroized'); return auth }
+	else { console.log('auth error') };
 };
 
-
-
-//Adds new user with a user-defined number as a key and an object with the name and default false for punchStatus
-submitNewUser.onclick = newUser = () => 
-{
-	//Make sure the user number entered is, you know, a number
-	if(!isNaN(Number(newUserNum.value)))
-	{
-		//Make a sub object fearing that number, a name: name key and punchStatus default to false
-		Users[Number(newUserNum.value)] = 
-		{
-			name: newUserName.value,
-			punchStatus: false
-		}
-		alert(`User ${newUserName.value} successfully created with ID number ${newUserNum.value}!`)
-	} else { alert('Please enter a valid whole number!')};
-	console.log(Users); //just to check
+//toggle boolean for punch status by id and log boolean to console
+const togglePunch = (id) => {
+	const userId = Number(id);
+	UsersObj[userId].punchStatus = !UsersObj[userId].punchStatus;
+	console.log(`User ${userId} Punched In: ${UsersObj[userId].punchStatus}`);
 };
 
+//Empty Object for logging punches, agian will be database eventually
+const PunchHistory = {};
 
-//New Punch
-punchButton.onclick = newPunch = () => { 
-	//Same deal as the auth field
-	myId = Number(document.getElementById('punchField').value); 
-	//Catch for invalid numbers and conditional on/off switch
-	if(!Users[myId]) {alert(`That number doesn't exist!`)}
-	else if (Users[myId].punchStatus === true)
-	{
-		Users[myId].punchStatus = false;
-		alert(`${Users[myId].name} clocked out successfully at ${clock}!	`);
-	}
-	else if (Users[myId].punchStatus === false )	
-	{
-		Users[myId].punchStatus = true;
-		alert(`${Users[myId].name} clocked in successfully at ${clock}!`);
-	}
-	//because i dont trust myself
-	else {alert(`System malfunction`)};
+const newPunch = (id) => {
+	const userId = Number(id);
+	togglePunch(userId);
+	if (UsersObj[userId].punchStatus)
+		{ Object.assign(PunchHistory, {[userId]: ['IN', sysTime]}) }
+	else { Object.assign(PunchHistory, {[userId]: ['OUT', sysTime]}) }
 };
+
+/* ================================== */
+
+console.log(`This is the backbone for a time clock system.\n
+Users can be added to the UsersObj object with newUser().\n
+userAuth() returns a boolean as to whether the user number exists.\n
+newPunch() assigns an object for each punch to the PunchHistory object.\n\n`);
+
+/*
+ 
+//Syntax for adding new users as follows (punchStatus defaults to false)
+NewUser(2112,'Michelle Frattaroli');
+
+//Returns full user info object by number
+console.log(UsersObj[2112]);
+
+//Returns user name as string
+console.log(UsersObj[2112].userName);
+
+//Returns punch Status as boolean
+console.log(UsersObj[2112].punchStatus);
+
+*/
+
+
+
