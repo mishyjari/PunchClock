@@ -1,5 +1,10 @@
 //import React from 'react';
 //import ReactDOM from 'react-dom';
+//import './index.html';
+
+const fs = require('fs');
+
+//fs.writeFile('output.txt', 'Meow', function(err) { if(err){console.log(err)} console.log('success')} );
 
 //Get current time
 const sysTime = new Date();
@@ -10,7 +15,8 @@ const UsersObj = {};
 
 //Simple function that uses Object.assign to add new users to the UsersObj object
 const newUser = (id,name) => {
-	Object.assign(UsersObj,{[id]:{userName:name,punchStatus:false}})
+	Object.assign(UsersObj,{[id]:{userName:name,punchStatus:false}});
+	console.log(`New User Creation Successful!\n${name} added with ID# ${id}\nRun commitUsers() to add this user to the file .users`);;
 };
 
 newUser(2112,'Michelle Frattaroli');
@@ -21,9 +27,9 @@ const userAuth = (id) => {
 	let auth = false;
 	if (UsersObj[userId]) 
 		{auth = true; 
-		console.log('authorized'); return auth; }
+		console.log(`User ID# ${userId} found with name ${UsersObj[userId].userName}`); return auth; }
 	else if (!UsersObj[id]) 
-		{ console.log('Unauthroized'); return auth }
+		{ console.log(`No user found with number ${userId}!`); return auth }
 	else { console.log('auth error') };
 };
 
@@ -41,9 +47,18 @@ const newPunch = (id) => {
 	const userId = Number(id);
 	togglePunch(userId);
 	if (UsersObj[userId].punchStatus)
-		{ Object.assign(PunchHistory, {[userId]: ['IN', sysTime]}) }
-	else { Object.assign(PunchHistory, {[userId]: ['OUT', sysTime]}) }
+		{ Object.assign(PunchHistory, {[userId]: ['IN', sysTime]});
+	        fs.appendFile('.punchLog', JSON.stringify({[userId]: ['IN', sysTime]}), function(err){ if(err){console.log(err)} console.log('success')})}
+
+	else { Object.assign(PunchHistory, {[userId]: ['OUT', sysTime]}) ;
+              fs.appendFile('.punchLog', JSON.stringify({[userId]: ['OUT', sysTime]}), function(err){ if(err){console.log(err)} console.log('success')})}
 };
+
+const commitUsers = () => {
+	fs.writeFile('.users', JSON.stringify(UsersObj), function(err){ if(err){console.log(err)} console.log('success')} ); 
+};
+
+
 
 /* ================================== */
 
@@ -67,6 +82,4 @@ console.log(UsersObj[2112].userName);
 console.log(UsersObj[2112].punchStatus);
 
 */
-
-
 
